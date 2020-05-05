@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"grpc-go-course/calculator/calculatorpb"
 	"io"
 	"log"
@@ -22,9 +24,38 @@ func main(){
 	//doUnary(calculatorService)
 	//doServerStreaming(calculatorService)
 	//doClientStreaming(calculatorService)
-	doBidiStreaming(calculatorService)
+	//doBidiStreaming(calculatorService)
+	doErrorUnary(calculatorService)
 }
 
+
+func doErrorUnary(calculatorServiceClient calculatorpb.CalculatorServiceClient){
+	req := &calculatorpb.SquareRootRequest{
+		Number: -10,
+	}
+
+	response, err := calculatorServiceClient.SquareRoot(context.Background(), req)
+
+	if err != nil {
+		responseError, ok := status.FromError(err)
+		if ok {
+			// actual error from grpc, user Error
+			fmt.Println(responseError.Message())
+
+			if responseError.Code() == codes.InvalidArgument {
+				fmt.Println("Probably sent a negative error")
+			}
+		} else {
+			// bigger error
+			log.Fatalf("Big error %v", err)
+		}
+		log.Fatalf("Calculatorserviceclient %v", err)
+	}
+
+	fmt.Printf("%v", response)
+
+
+}
 
 
 func doUnary(calculatorServiceClient calculatorpb.CalculatorServiceClient){

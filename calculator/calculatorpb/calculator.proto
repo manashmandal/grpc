@@ -35,9 +35,21 @@ message FindMaximumResponse {
   int32 result = 1;
 }
 
+message SquareRootRequest {
+  int32 number = 1;
+}
+
+message SquareRootResponse {
+  double number_root = 1;
+}
+
 service CalculatorService {
   rpc Sum(SumRequest) returns (SumResponse) {};
+
   rpc PrimeNumberDecomposition(PrimeNumberDecompositionRequest) returns (stream PrimeNumberDecompositionResponse) {};
   rpc ComputeAverage(stream ComputeAverageRequest) returns(ComputeAverageResponse) {};
   rpc FindMaximum(stream FindMaximumRequest) returns(stream FindMaximumResponse) {};
+
+  // this will throw an exception, INVALID_ARGUMENT for negative number
+  rpc SquareRoot(SquareRootRequest) returns (SquareRootResponse) {}
 }
